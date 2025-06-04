@@ -1,0 +1,23 @@
+
+{
+    "region" : "us-east-2",
+    "configuration" : "Release",
+    "framework"     : "net7.0",
+    "self-contained" : true,
+    "application"    : "ToDoWebAppDemo",
+    "environment"    : "ToDoWebAppDemo-dev",
+    "enable-xray"    : true,
+    "enhanced-health-type" : "enhanced",
+    "additional-options"   : "\"aws:autoscaling:launchconfiguration,SecurityGroups\"=\"sg-0688f917ee559a364\";\"aws:ec2:vpc,Subnets\"=\"subnet-08e95d758f610f424\";\"aws:ec2:vpc,ELBSubnets\"=\"subnet-08e95d758f610f424,subnet-04692450fc2b29f7a,subnet-0f4fa45d7439197d8\";\"aws:elasticbeanstalk:command,BatchType\"=\"Percentage\";\"aws:elasticbeanstalk:command,BatchSize\"=\"100\"",
+    "solution-stack"       : "64bit Windows Server 2022 v2.14.0 running IIS 10.0",
+    "environment-type"     : "LoadBalanced",
+    "cname"                : "todowebappdemo-dev",
+    "instance-type"        : "t3a.medium",
+    "key-pair"             : "",
+    "instance-profile"     : "aws-elasticbeanstalk-ec2-role",
+    "service-role"         : "aws-elasticbeanstalk-service-role",
+    "proxy-server"         : "nginx",
+    "app-path"             : "/",
+    "iis-website"          : "Default Web Site",
+    "loadbalancer-type"    : "application"
+}

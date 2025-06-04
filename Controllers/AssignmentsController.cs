@@ -75,15 +75,18 @@ namespace ToDo_Web_App.Controllers
             if (!String.IsNullOrEmpty(title))
             {
                 var filteredAssignments = assignments.Where(a => a.Name.Contains(title, StringComparison.OrdinalIgnoreCase));
+                ViewBag.Title = title;
                 return View(filteredAssignments);
             }
 
             if(!String.IsNullOrEmpty(category))
             {
                 var filteredAssignments = assignments.Where(a => a.Type.Contains(category, StringComparison.OrdinalIgnoreCase));
+                ViewBag.Category = category;
                 return View(filteredAssignments);
             }
             
+            ViewBag.TotalTasks = assignments.Count;
             
             return View(assignments);
         }
@@ -140,7 +143,7 @@ namespace ToDo_Web_App.Controllers
                
                 _context.Add(assignment);
                 await _context.SaveChangesAsync();
-                TempData["Message"] = "Assignment created successfully";
+                TempData["Message"] = "An assignment was added successfully";
                 return RedirectToAction(nameof(Index));
             }
             return View(assignment);
@@ -187,7 +190,7 @@ namespace ToDo_Web_App.Controllers
 
 
                     await _context.SaveChangesAsync();
-                    TempData["Message"] = "Assignment updated successfully";
+                    TempData["Message"] = "An assignment was updated successfully";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -232,7 +235,7 @@ namespace ToDo_Web_App.Controllers
         {
             if (_context.Assignment == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Assignment' is null.");
+                return Problem("Connection problem with the database!");
             }
 
             var assignment = await _context.Assignment.FindAsync(id);
@@ -253,7 +256,7 @@ namespace ToDo_Web_App.Controllers
             
                 _context.Assignment.Remove(assignment);
                 await _context.SaveChangesAsync();
-            TempData["Message"] = "Assignment deleted successfully";
+            TempData["Message"] = "An assignment was deleted successfully";
                 return RedirectToAction(nameof(Index));
             
 

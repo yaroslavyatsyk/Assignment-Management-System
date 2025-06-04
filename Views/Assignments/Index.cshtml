@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<ToDo_Web_App.Models.Assignment>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Assignments' Dashboard";
 }
 
 <h1>List of Assignments</h1>
@@ -13,7 +13,7 @@
     </div>
 }
 
-<form method="get">
+<form method="get" id="searching">
 <div class="form-group">
         <label for="search">Search Assignments</label>
         
@@ -21,7 +21,8 @@
 
 
     </div>
-
+    </form>
+    <form method="get" id="sorting">
 
     <div class="form-group">
         <label>Sort by:</label>
@@ -58,7 +59,6 @@
         </div>
         <br />
 
-<input type="submit" class="btn btn-primary" value="Apply"></input>
 
 
 
@@ -69,10 +69,12 @@
 
 <br />
 
-<form method="get">
-    <label for="cat">Show assignments for</label>
+<form method="get" id="filtering">
+   
 
+    <label for="cat">Filter by Category:</label>
     <select name="category" id="cat">
+
         
 <option value="">All Categories</option>
         @foreach(var category in ViewBag.Categories)
@@ -134,3 +136,34 @@
 }
     </tbody>
 </table>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var filtering = document.getElementById("sorting");
+        var select = document.getElementById("cat");
+
+
+        if(filtering && select) {
+            select.addEventListener('change', function() {
+                filtering.submit();
+            })
+        }
+
+    })
+    document.addEventListener("DOMContentLoaded", function () {
+        var sorting = document.getElementById("sorting");
+        
+        if(sorting) {
+            var sortingType = document.querySelectorAll("input[type=radio]");
+
+
+            sortingType.forEach(sortType => {
+                sortType.addEventListener('change',function() {
+                    sorting.submit();
+                })
+            })
+        }
+
+    })
+
+</script>
