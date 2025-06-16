@@ -33,7 +33,8 @@ namespace ToDo_Web_App
             builder.Services.Configure<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme, options =>
             {
 
-                options.ExpireTimeSpan = TimeSpan.FromDays(7);
+                options.ExpireTimeSpan = TimeSpan.FromDays(180);
+                options.SlidingExpiration = true;
             });
 
           

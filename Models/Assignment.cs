@@ -16,6 +16,7 @@ namespace ToDo_Web_App.Models
 
         [Required(ErrorMessage = "Please enter a due date for the assignment.")]
         [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DueDate { get; set; }
 
         [Required(ErrorMessage = "Please choose the type of assignment")]
