@@ -36,58 +36,58 @@ namespace ToDo_Web_App.Controllers
 
         // GET: Assignments
     
-        public async Task<IActionResult> Index(string title = "", string sortOrder = "", string category = "")
+        public async Task<IActionResult> Index(string? title, string? sortOrder, string? category)
         {
 
            
             ViewBag.Categories = GetArrayOfCategories();
            
             var user = _userManager.FindByNameAsync(User.Identity.Name).Result;
-            var assignments = await _context.Assignment.Include(a => a.User).Where(u => u.User.UserName == User.Identity.Name).ToListAsync();
+            var assignmentsQuery = _context.Assignment.AsQueryable().Where(a => a.User.UserName == user.UserName);
 
             if (!String.IsNullOrEmpty(sortOrder))
             {
                 switch (sortOrder)
                 {
                     case "date_desc":
-                        assignments = assignments.OrderByDescending(a => a.DueDate).ToList();
+                        assignmentsQuery = assignmentsQuery.OrderByDescending(a => a.DueDate);
                         break;
                     case "date_asc":
 
-                        assignments = assignments.OrderBy(a => a.DueDate).ToList();
+                        assignmentsQuery = assignmentsQuery.OrderBy(a => a.DueDate);
                         break;
 
                     case "type_asc":
-                        assignments = assignments.OrderBy(a => a.Type).ToList();
+                        assignmentsQuery = assignmentsQuery.OrderBy(a => a.Type);
                         break;
                         case "type_desc":
-                        assignments = assignments.OrderByDescending(a => a.Type).ToList();
+                        assignmentsQuery = assignmentsQuery.OrderByDescending(a => a.Type);
                         break;
 
                         case "name_asc":
-                        assignments = assignments.OrderBy(a => a.Name).ToList();
+                        assignmentsQuery = assignmentsQuery.OrderBy(a => a.Name);
                         break;
                         case "name_desc":
-                        assignments = assignments.OrderByDescending(a => a.Name).ToList();
+                        assignmentsQuery = assignmentsQuery .OrderByDescending(a => a.Name);
                         break;
                 }
             }
-            if (!String.IsNullOrEmpty(title))
+            if (!String.IsNullOrWhiteSpace(title))
             {
-                var filteredAssignments = assignments.Where(a => a.Name.Contains(title, StringComparison.OrdinalIgnoreCase));
+                assignmentsQuery = assignmentsQuery.Where(a => a.Name.Contains(title, StringComparison.OrdinalIgnoreCase));
                 ViewBag.Title = title;
-                return View(filteredAssignments);
             }
 
-            if(!String.IsNullOrEmpty(category))
+            if(!String.IsNullOrWhiteSpace(category))
             {
-                var filteredAssignments = assignments.Where(a => a.Type.Contains(category, StringComparison.OrdinalIgnoreCase));
+                assignmentsQuery = assignmentsQuery.Where(a => a.Type.Contains(category, StringComparison.OrdinalIgnoreCase));
                 ViewBag.Category = category;
-                return View(filteredAssignments);
             }
             
-            ViewBag.TotalTasks = assignments.Count;
-            
+            var assignments = await assignmentsQuery.ToListAsync();
+
+            ViewBag.TotalAssignments = assignments.Count;
+
             return View(assignments);
         }
 
