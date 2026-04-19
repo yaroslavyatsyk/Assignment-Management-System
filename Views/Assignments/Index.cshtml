@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ToDo_Web_App.Models.Assignment>
+﻿@model PaginatedList<ToDo_Web_App.Models.Assignment>
 
 @{
     ViewData["Title"] = "Assignments' Dashboard";
@@ -6,163 +6,161 @@
 
 <h1>List of Assignments</h1>
 
-@if(TempData["Message"] != null)
+@if (TempData["Message"] != null)
 {
     <div class="alert alert-success" role="alert">
         @TempData["Message"]
     </div>
 }
 
-<form method="get" id="searching">
-<div class="form-group">
+<form method="get" id="filtersForm">
+    <div class="form-group">
         <label for="search">Search Assignments</label>
-        
-<input type="search" class="form-control" id="search" name="title" placeholder="Search">
-
-
+        <input type="search"
+               class="form-control"
+               id="search"
+               name="title"
+               value="@ViewBag.CurrentTitle"
+               placeholder="Search" />
     </div>
-    </form>
-    <form method="get" id="sorting">
+
+    <br />
 
     <div class="form-group">
         <label>Sort by:</label>
+
         <div class="form-check">
-            <input type="radio" class="form-check-input" id="SortByDateAsc" name="sortOrder" value="date_asc" @(ViewBag.CurrentSort == "date_asc" ? "checked" : "") />
+            <input type="radio" class="form-check-input" id="SortByDateAsc" name="sortOrder" value="date_asc"
+                   @(ViewBag.CurrentSort == "date_asc" ? "checked" : "") />
             <label class="form-check-label" for="SortByDateAsc">Date Ascending</label>
         </div>
+
         <div class="form-check">
-            <input type="radio" class="form-check-input" id="SortByDateDesc" name="sortOrder" value="date_desc" @(ViewBag.CurrentSort == "date_desc" ? "checked" : "") />
+            <input type="radio" class="form-check-input" id="SortByDateDesc" name="sortOrder" value="date_desc"
+                   @(ViewBag.CurrentSort == "date_desc" ? "checked" : "") />
             <label class="form-check-label" for="SortByDateDesc">Date Descending</label>
         </div>
 
         <div class="form-check">
-            <input type="radio" class="form-check-input" id="SortByTypeAsc" name="sortOrder" value="type_asc" @(ViewBag.CurrentSort == "type_asc" ? "checked" : "") />
+            <input type="radio" class="form-check-input" id="SortByTypeAsc" name="sortOrder" value="type_asc"
+                   @(ViewBag.CurrentSort == "type_asc" ? "checked" : "") />
             <label class="form-check-label" for="SortByTypeAsc">Type Ascending</label>
-            </div>
-<div class="form-check">
-        <input type="radio" class="form-check-input" id="SortByTypeDesc" name="sortOrder" value="type_desc" @(ViewBag.CurrentSort == "type_desc" ? "checked" : "") />
-            <label class="form-check-label" for="SortByTypeDesc">Type Descending</label>
-            </div>
-<div class="form-check">
-
-    <input type = "radio" class="form-check-input" id="SortByNameAsc" name="sortOrder" value="name_asc" @(ViewBag.CurrentSort == "name_asc" ? "checked" : "")/>
-            <label class="form-check-label" for="SortByTypeDesc">Title Ascending</label>
-
-    </div>
-
-<div class="form-check">
-            <input type="radio" class="form-check-input" id="SortByNameDesc" name="sortOrder" value="name_desc" @(ViewBag.CurrentSort == "name_desc" ? "checked" : "") />
-            <label class="form-check-label" for="SortByNameDesc">Title Descending</label>
-
-    </div>
-
         </div>
-        <br />
 
+        <div class="form-check">
+            <input type="radio" class="form-check-input" id="SortByTypeDesc" name="sortOrder" value="type_desc"
+                   @(ViewBag.CurrentSort == "type_desc" ? "checked" : "") />
+            <label class="form-check-label" for="SortByTypeDesc">Type Descending</label>
+        </div>
 
+        <div class="form-check">
+            <input type="radio" class="form-check-input" id="SortByNameAsc" name="sortOrder" value="name_asc"
+                   @(ViewBag.CurrentSort == "name_asc" ? "checked" : "") />
+            <label class="form-check-label" for="SortByNameAsc">Title Ascending</label>
+        </div>
 
+        <div class="form-check">
+            <input type="radio" class="form-check-input" id="SortByNameDesc" name="sortOrder" value="name_desc"
+                   @(ViewBag.CurrentSort == "name_desc" ? "checked" : "") />
+            <label class="form-check-label" for="SortByNameDesc">Title Descending</label>
+        </div>
+    </div>
 
-    
+    <br />
 
-
-</form>
-
-<br />
-
-<form method="get" id="filtering">
-   
-
-    <label for="cat">Filter by Category:</label>
-    <select name="category" id="cat">
-
-        
-<option value="">All Categories</option>
-        @foreach(var category in ViewBag.Categories)
-        {
-            <option value="@category">@category</option>
-        })
+    <div class="form-group">
+        <label for="cat">Filter by Category:</label>
+        <select name="category" id="cat" class="form-control">
+            <option value="">All Categories</option>
+            @foreach (var category in ViewBag.Categories)
+            {
+                <option value="@category">@category</option>
+            }
         </select>
+    </div>
 
-        <br/>
+    <br />
+
+    <button type="submit" class="btn btn-secondary">Apply</button>
 </form>
 
-
 <br />
+
+<p>Total assignments: @ViewBag.TotalAssignments</p>
+
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                Due Date
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Type)
-            </th>
-           
+            <th>@Html.DisplayNameFor(model => model[0].Name)</th>
+            <th>@Html.DisplayNameFor(model => model[0].Description)</th>
+            <th>Due Date</th>
+            <th>@Html.DisplayNameFor(model => model[0].Type)</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DueDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a> 
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a> 
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.Description)</td>
+                <td>@Html.DisplayFor(modelItem => item.DueDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.Type)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
 
+<div class="mt-3">
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex - 1)"
+       asp-route-title="@ViewBag.CurrentTitle"
+       asp-route-sortOrder="@ViewBag.CurrentSort"
+       asp-route-category="@ViewBag.CurrentCategory"
+       class="btn btn-outline-primary @prevDisabled">
+        Previous
+    </a>
+
+    <span class="mx-2">Page @Model.PageIndex of @Model.TotalPages</span>
+
+    <a asp-action="Index"
+       asp-route-pageNumber="@(Model.PageIndex + 1)"
+       asp-route-title="@ViewBag.CurrentTitle"
+       asp-route-sortOrder="@ViewBag.CurrentSort"
+       asp-route-category="@ViewBag.CurrentCategory"
+       class="btn btn-outline-primary @nextDisabled">
+        Next
+    </a>
+</div>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var filtering = document.getElementById("sorting");
-        var select = document.getElementById("cat");
-
-
-        if(filtering && select) {
-            select.addEventListener('change', function() {
-                filtering.submit();
-            })
-        }
-
-    })
     document.addEventListener("DOMContentLoaded", function () {
-        var sorting = document.getElementById("sorting");
-        
-        if(sorting) {
-            var sortingType = document.querySelectorAll("input[type=radio]");
+        const form = document.getElementById("filtersForm");
+        const select = document.getElementById("cat");
+        const sortingType = document.querySelectorAll("input[type=radio]");
 
-
-            sortingType.forEach(sortType => {
-                sortType.addEventListener('change',function() {
-                    sorting.submit();
-                })
-            })
+        if (select) {
+            select.addEventListener("change", function () {
+                form.submit();
+            });
         }
 
-    })
-
+        sortingType.forEach(sortType => {
+            sortType.addEventListener("change", function () {
+                form.submit();
+            });
+        });
+    });
 </script>

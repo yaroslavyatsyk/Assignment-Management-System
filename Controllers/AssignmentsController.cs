@@ -35,68 +35,73 @@ namespace ToDo_Web_App.Controllers
         }
 
         // GET: Assignments
-    
-        public async Task<IActionResult> Index(string? title, string? sortOrder, string? category)
+
+        public async Task<IActionResult> Index(string? title, string? sortOrder, string? category, int? pageNumber)
         {
-
-           
             ViewBag.Categories = GetArrayOfCategories();
-           
-            var user = _userManager.FindByNameAsync(User.Identity.Name).Result;
-            var assignmentsQuery = _context.Assignment.AsQueryable().Where(a => a.User.UserName == user.UserName);
 
-            if (!String.IsNullOrEmpty(sortOrder))
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var assignmentsQuery = _context.Assignment
+                .Where(a => a.User.UserName == user.UserName);
+
+            switch (sortOrder)
             {
-                switch (sortOrder)
-                {
-                    case "date_desc":
-                        assignmentsQuery = assignmentsQuery.OrderByDescending(a => a.DueDate);
-                        break;
-                    case "date_asc":
-
-                        assignmentsQuery = assignmentsQuery.OrderBy(a => a.DueDate);
-                        break;
-
-                    case "type_asc":
-                        assignmentsQuery = assignmentsQuery.OrderBy(a => a.Type);
-                        break;
-                        case "type_desc":
-                        assignmentsQuery = assignmentsQuery.OrderByDescending(a => a.Type);
-                        break;
-
-                        case "name_asc":
-                        assignmentsQuery = assignmentsQuery.OrderBy(a => a.Name);
-                        break;
-                        case "name_desc":
-                        assignmentsQuery = assignmentsQuery .OrderByDescending(a => a.Name);
-                        break;
-                }
-            }
-            if (!String.IsNullOrWhiteSpace(title))
-            {
-                assignmentsQuery = assignmentsQuery.Where(a => a.Name.Contains(title, StringComparison.OrdinalIgnoreCase));
-                ViewBag.Title = title;
+                case "date_desc":
+                    assignmentsQuery = assignmentsQuery.OrderByDescending(a => a.DueDate);
+                    break;
+                case "date_asc":
+                    assignmentsQuery = assignmentsQuery.OrderBy(a => a.DueDate);
+                    break;
+                case "type_asc":
+                    assignmentsQuery = assignmentsQuery.OrderBy(a => a.Type);
+                    break;
+                case "type_desc":
+                    assignmentsQuery = assignmentsQuery.OrderByDescending(a => a.Type);
+                    break;
+                case "name_asc":
+                    assignmentsQuery = assignmentsQuery.OrderBy(a => a.Name);
+                    break;
+                case "name_desc":
+                    assignmentsQuery = assignmentsQuery.OrderByDescending(a => a.Name);
+                    break;
+                default:
+                    assignmentsQuery = assignmentsQuery.OrderBy(a => a.DueDate);
+                    break;
             }
 
-            if(!String.IsNullOrWhiteSpace(category))
+            if (!string.IsNullOrWhiteSpace(title))
             {
-                assignmentsQuery = assignmentsQuery.Where(a => a.Type.Contains(category, StringComparison.OrdinalIgnoreCase));
-                ViewBag.Category = category;
+                assignmentsQuery = assignmentsQuery.Where(a => a.Name.ToLower().Contains(title.ToLower()));
             }
-            
-            var assignments = await assignmentsQuery.ToListAsync();
 
-            ViewBag.TotalAssignments = assignments.Count;
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                assignmentsQuery = assignmentsQuery.Where(a => a.Type.ToLower().Contains(category.ToLower()));
+            }
 
-            return View(assignments);
+            ViewBag.CurrentTitle = title;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.CurrentCategory = category;
+
+            ViewBag.TotalAssignments = await assignmentsQuery.CountAsync();
+
+            int pageSize = 3;
+
+            var paginatedList = await PaginatedList<Assignment>.CreateAsync(
+                assignmentsQuery.AsNoTracking(),
+                pageNumber ?? 1,
+                pageSize);
+
+            return View(paginatedList);
         }
 
 
 
 
- 
 
-        
+
+
 
 
         // GET: Assignments/Details/5
