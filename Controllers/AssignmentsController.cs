@@ -42,7 +42,7 @@ namespace ToDo_Web_App.Controllers
 
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
-            var assignmentsQuery = _context.Assignment
+            var assignmentsQuery = _context.Assignment.AsNoTracking()
                 .Where(a => a.User.UserName == user.UserName);
 
             switch (sortOrder)
@@ -71,13 +71,16 @@ namespace ToDo_Web_App.Controllers
             }
 
             if (!string.IsNullOrWhiteSpace(title))
+
             {
-                assignmentsQuery = assignmentsQuery.Where(a => a.Name.ToLower().Contains(title.ToLower()));
+                var loweredTitle = title.ToLower();
+                assignmentsQuery = assignmentsQuery.Where(a => a.Name.ToLower().Contains(loweredTitle));
             }
 
             if (!string.IsNullOrWhiteSpace(category))
             {
-                assignmentsQuery = assignmentsQuery.Where(a => a.Type.ToLower().Contains(category.ToLower()));
+                var loweredCategory = category.ToLower();
+                assignmentsQuery = assignmentsQuery.Where(a => a.Type.ToLower().Contains(loweredCategory));
             }
 
             ViewBag.CurrentTitle = title;
